@@ -22,6 +22,10 @@ class TicTacToe {
     return this;
   }
 
+  resetGame() {
+    this.currentState = TicTacToe.initialState;
+  }
+
   /**
    * Return the initial state of the board.
    */

@@ -2,9 +2,15 @@
 const { X, O, EMPTY } = CellState
 const tic = new TicTacToe();
 
-// UI
+// Board.
 const table = document.getElementById("board")
 const cells = table.getElementsByTagName("td");
+
+// Endgame section.
+const endGameSectionElement = document.getElementById("end-game-section")
+const resultElement = endGameSectionElement.getElementsByClassName("result")[0]
+const restartGameButton = endGameSectionElement.getElementsByClassName("restart-game")[0]
+restartGameButton.onclick = restartGameTicTacToe;
 
 // Handle cell clicks.
 for(const cell of cells) {
@@ -31,8 +37,8 @@ async function onCell(e) {
   }
 }
 
+// Make the AI move.
 async function afterHuman() {
-  // Make the AI move.
   const aiMove = tic.minimax()
 
   if(handleGameStatus())
@@ -47,24 +53,44 @@ async function afterHuman() {
   handleGameStatus()
 }
 
+// Return a text depending on the board result.
 function checkGameStatus() {
   if(!tic.isTerminal())
     return null;
 
   const utility = tic.utility()
   
-  if(utility === 1)
-    return 'Won X'
-  else if(utility === -1)
-    return 'Won O'
-  else
-    return 'Tie'
+  if (utility === 1) {
+    return "Won X";
+  } else if (utility === -1) {
+    return "Won O";
+  } else {
+    return "Tie";
+  }
 }
 
 function handleGameStatus() {
   const gameStatus = checkGameStatus();
   if(gameStatus) {
-    console.log(gameStatus);
+    indicateTheWinner(gameStatus)
     return gameStatus;
   }
+}
+
+function indicateTheWinner(gameStatus) {
+  resultElement.innerText = gameStatus;
+  endGameSectionElement.style.display = "flex"
+}
+
+function restartGameTicTacToe() {
+  // Hide game over panel.
+  endGameSectionElement.style.display = "none"
+
+  // Restart panel.
+  for(let cell of cells) {
+    cell.innerText = ''
+  }
+
+  // Restart game.
+  tic.resetGame();
 }
