@@ -15,17 +15,46 @@ h1 {
   margin-bottom: 5rem;
 }
 
-table {
-  border-collapse: collapse;
-  border: none;
+/* Piece indicator */
+#indicator td {
+  width: 4rem;
+  height: 3rem;
+  text-align: center;
+  border: 0.5px solid white;
+  font-size: 2rem;
+  cursor: pointer;
 }
 
-table td {
+#indicator td:hover {
+  background-color: #1A1A1A;
+}
+
+/* Board Styles */ 
+table {
+  border-collapse: collapse;
+}
+
+#board td {
   width: 5rem;
   height: 5rem;
   text-align: center;
-  border: 3px solid white;
   font-size: 2rem;
 }
 
+#board.disabled td {
+  border: 3px solid gray;
+}
 
+#board.active td {
+  border: 3px solid white;
+}
+
+/* Button */
+button {
+  background-color: black;
+  border: none;
+  padding: 1rem;
+  color: #2ECC71;
+  font-size: 1rem;
+  cursor: pointer;
+}

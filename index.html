@@ -11,7 +11,7 @@
 <body class="flex-column-center">
   <h1>Tic-Tac-Toe</h1>
 
-  <table id="board" border="1">
+  <table id="board" class="active">
     <tr>
       <td id="00" style="border-left: none; border-top: none"></td> 
       <td id="01" style="border-top: none"></td> 
@@ -29,9 +29,21 @@
     </tr>
   </table>
 
-  <div id="end-game-section" class="flex-column-center" style="display: none">
-    <h5 class="result"></h5>
-    <button class="restart-game">Reiniciar juego</button>
+	<br />
+
+  <div id="end-game-section" class="flex-column-center">
+    <h4 class="result">Seleccionar pieza</h5>
+
+		<table id="indicator">
+			<tr>
+				<td>X</td>
+				<td>O</td>
+			</tr>
+		</table>
+
+		<br />
+
+    <button class="restart-game">Empezar</button>
   </div>
 </body>
 </html>
