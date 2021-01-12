@@ -2,8 +2,8 @@ const CellState = { X: 'X', O: 'O', EMPTY: null }
 Object.freeze(CellState);
 
 class TicTacToe {
-  constructor() {
-    this.currentState = TicTacToe.initialState;
+  constructor(board = null) {
+    this.currentState = !board ? TicTacToe.initialState : board;
   }
 
   /**
@@ -16,13 +16,7 @@ class TicTacToe {
       [EMPTY, EMPTY, EMPTY],
       [EMPTY, EMPTY, EMPTY],
       [EMPTY, EMPTY, EMPTY]
-    ];
-
-    //const emptyBoard = [
-      //[X, EMPTY, EMPTY],
-      //[O,   X,   EMPTY],
-      //[O, EMPTY,   X  ]
-    //];
+    ]
     
     return emptyBoard;
   }
@@ -31,7 +25,7 @@ class TicTacToe {
    * Return which player should play for the next move on the board.
    * @return {String} The player O or X that can take place for the next move.
    */
-  get nextPlayer() {
+  nextPlayer() {
     const { X, O } = CellState;
 
     const matchIsNotYetStarted = this.currentState === TicTacToe.initialState;
@@ -62,7 +56,7 @@ class TicTacToe {
    * @return {int[][]} The list of coordinates i, j, that represent the allowed
    * movements on the board for the current player.
    */
-  get allowedActions() {
+  allowedActions() {
     const allowedActions = [];
     const boardSize = this.currentState.length;
 
@@ -84,8 +78,8 @@ class TicTacToe {
    * @return {Array<Array<string | null>>} The resulting board after aplying the given action to the current state.
    */
   makeMove(action) {
-    const playerTurn = this.nextPlayer;
-    const allowedActions = this.allowedActions;
+    const playerTurn = this.nextPlayer();
+    const allowedActions = this.allowedActions();
 
     const isValidAction = allowedActions.find(a => a[0] === action[0] && a[1] === action[1]);
     if(!isValidAction)
@@ -94,13 +88,15 @@ class TicTacToe {
     const resultingBoard = this.currentState.map((row) => row.slice());
     resultingBoard[action[0]][action[1]] = playerTurn;
 
-    return resultingBoard;
+    const newTicTacToe = new TicTacToe(resultingBoard)
+
+    return newTicTacToe;
   }
 
   playerHasWon() {
     const { X, O } = CellState;
     const boardSize = this.currentState.length;
-    const lastPlayer = this.nextPlayer === X ? O : X;
+    const lastPlayer = this.nextPlayer() === X ? O : X;
 
     let i = 0, j = 0;
     const left = 0;
@@ -147,13 +143,11 @@ class TicTacToe {
       }
 
       // Evaluate horizontally.
-      if(j === right) {
-        const horizontalMatch = count[0] === boardSize;
-        if(horizontalMatch)
-          return lastPlayer;
+      const horizontalMatch = count[0] === boardSize;
+      if(horizontalMatch)
+        return lastPlayer;
 
-        count[0] = 0; // Restar the horizontal counting.
-      }
+      count[0] = 0; // Restar the horizontal counting.
     }
 
     return null;
@@ -198,4 +192,66 @@ class TicTacToe {
     else
       return 0
   } 
+
+  /**
+   * Returns the optimal action for the current player on the board.
+   */
+  minimax() {
+    const playerTurn = this.nextPlayer()
+    const { X, O } = CellState
+
+    if(playerTurn === CellState.X)
+      return TicTacToe.bestMove(this, -Infinity, Math.max, O)
+    else
+      return TicTacToe.bestMove(this, Infinity, Math.min, X)
+  }
+
+  static bestMove(board, initialValue, evaluationFunction, opponent) {
+    const { O } = CellState
+    let bestMove = null
+    let value = initialValue
+
+    for(let action of board.allowedActions()) {
+      const previous = value
+      const game = board.makeMove(action)
+      const opponnetValue = opponent === O ? game.maxValue() : game.minValue()
+
+      value = evaluationFunction(value, opponnetValue)
+      if(value !== previous) {
+        bestMove = action
+      }
+    }
+
+    return bestMove
+  }
+
+  maxValue() {
+    if(this.isTerminal())
+      return this.utility()
+
+    let value = -Infinity
+    for(let action of this.allowedActions()) {
+      const newBoard = this.makeMove(action)
+      const minimizerBestMove = newBoard.minValue()
+
+      value = Math.max(value, minimizerBestMove)
+    }
+
+    return value;
+  }
+
+  minValue() {
+    if(this.isTerminal())
+      return this.utility()
+
+    let value = Infinity
+    for(let action of this.allowedActions()) {
+      const newTicTacToe = this.makeMove(action)
+      const maximizerBestMove = newTicTacToe.maxValue()
+
+      value = Math.min(value, maximizerBestMove)
+    }
+
+    return value;
+  }
 }
