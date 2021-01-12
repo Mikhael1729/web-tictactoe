@@ -6,6 +6,26 @@ class TicTacToe {
     this.currentState = !board ? TicTacToe.initialState : board;
   }
 
+  changeCurrentState(action) {
+    const playerTurn = this.nextPlayer();
+    const allowedActions = this.allowedActions();
+
+    console.log(allowedActions)
+
+    const isValidAction = allowedActions.find(
+      (a) => a[0] === action[0] && a[1] === action[1]
+    );
+
+    console.log(action)
+
+    if (!isValidAction)
+      throw `The given action "${action}" is not allowed for the board ${this.currentState}`;
+
+    this.currentState[action[0]][action[1]] = playerTurn;
+
+    return this;
+  }
+
   /**
    * Return the initial state of the board.
    */
